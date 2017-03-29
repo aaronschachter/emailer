@@ -3,6 +3,7 @@
 const express = require('express')
 const router = express.Router();
 const logger = require('winston');
+const emailer = require('../../lib/email')
 
 function missingEmailParams(data) {
   if (!data) {
@@ -15,8 +16,6 @@ function missingEmailParams(data) {
 }
 
 router.use('/', (req, res, next) => {
-  logger.debug(`POST /email req.body:${JSON.stringify(req.body)}`);
-
   if (missingEmailParams(req.body)) {
     const msg = 'Missing required body parameters.';
     logger.warn(msg);
@@ -28,9 +27,17 @@ router.use('/', (req, res, next) => {
 });
 
 router.post('/', (req, res) => {
-  const msg = 'Message sent.';
-  logger.info(msg);
-  res.send(msg);
+  return emailer.mailgun(req.body)
+    .then((response) => {
+      logger.debug(response.text);
+
+      return res.status(response.status).send(JSON.parse(response.text));
+    })
+    .catch((err) => {
+      logger.error(err);
+
+      return res.status(500).send(err.message);
+    });
 });
 
 module.exports = router;
