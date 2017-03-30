@@ -4,9 +4,12 @@ const express = require('express');
 const router = express.Router();
 
 const emailValidator = require('email-validator');
-const helpers = require('../../lib/helpers');
 const isHtml = require('is-html');
 const logger = require('winston');
+
+const helpers = require('../../lib/helpers');
+const mailgun = require('../../lib/mailgun');
+const mandrill = require('../../lib/mandrill');
 
 /**
  * Checks if given data object contains required parameters to post a message.
@@ -63,9 +66,9 @@ router.post('/', (req, res) => {
 
   let postMessage;
   if (process.env.EMAIL_PROVIDER === 'mandrill') {
-    postMessage = helpers.postMandrillMessage(data);
+    postMessage = mandrill.postMessage(data);
   } else {
-    postMessage = helpers.postMailgunMessage(data);
+    postMessage = mailgun.postMessage(data);
   }
 
   return postMessage
