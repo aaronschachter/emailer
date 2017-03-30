@@ -6,6 +6,7 @@ const router = express.Router();
 const emailValidator = require('email-validator');
 const isHtml = require('is-html');
 const logger = require('winston');
+const striptags = require('striptags');
 
 const helpers = require('../../lib/helpers');
 const mailgun = require('../../lib/mailgun');
@@ -48,9 +49,10 @@ router.use('/', (req, res, next) => {
 });
 
 /**
- * Store req.body.body as req.body.html if it contains valid HTML.
+ * Store req.body.text and req.body.html properties from req.body.body param.
  */
 router.use('/', (req, res, next) => {
+  req.body.text = striptags(req.body.body);
   if (isHtml(req.body.body)) {
     req.body.html = req.body.body;
   }
@@ -59,7 +61,7 @@ router.use('/', (req, res, next) => {
 })
 
 /**
- * Post incoming request parameters to our email provider to send them as an email.
+ * Post req.body to our email provider to send message.
  */
 router.post('/', (req, res) => {
   const data = req.body;
