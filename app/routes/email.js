@@ -27,11 +27,19 @@ router.use('/', (req, res, next) => {
 });
 
 router.post('/', (req, res) => {
-  return emailer.mailgun(req.body)
-    .then((response) => {
-      logger.debug(response.text);
+  let postEmail;
+  if (process.env.EMAIL_PROVIDER === 'mandrill') {
+    postEmail = emailer.mandrill(req.body);
+  }
+    postEmail = emailer.mailgun(req.body);
+  }
 
-      return res.status(response.status).send(JSON.parse(response.text));
+  return postEmail
+    .then((response) => {
+      const jsonResponse = JSON.parse(response.text);
+      logger.debug(jsonResponse);
+
+      return res.status(response.status).send(jsonResponse);
     })
     .catch((err) => {
       logger.error(err);
