@@ -67,23 +67,34 @@ router.post('/', (req, res) => {
   const data = req.body;
 
   let postMessage;
+  let provider = 'mailgun';
+
   if (process.env.EMAIL_PROVIDER === 'mandrill') {
+    provider = process.env.EMAIL_PROVIDER;
     postMessage = mandrill.postMessage(data);
   } else {
     postMessage = mailgun.postMessage(data);
   }
 
   return postMessage
-    .then((response) => {
-      const jsonResponse = JSON.parse(response.text);
-      logger.debug(jsonResponse);
+    .then((postResponse) => {
+      const response = {
+        provider,
+        provider_response: postResponse,
+      };
+      logger.info(response);
 
-      return res.status(response.status).send(jsonResponse);
+      return res.status(200).send(response);
     })
     .catch((err) => {
-      logger.error(err);
+      const response = {
+        provider,
+        message: err.message,
+        provider_response: err.providerResponse ? err.providerResponse : null,
+      };
+      logger.warn(response);
 
-      return res.status(500).send(err.message);
+      return res.status(500).send(response);
     });
 });
 

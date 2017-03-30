@@ -13,6 +13,7 @@
     "url": "git+https://github.com/aaronschachter/emailer.git"
   },
   "dependencies": {
+    "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
     "dotenv": "^4.0.0",
     "email-validator": "^1.0.7",
