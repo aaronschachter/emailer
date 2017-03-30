@@ -20,11 +20,23 @@ logger.configure({
   ],
 });
 
-// TODO: Check that all required config variables have been set.
+function checkConfig(key) {
+  if (!process.env[key]) {
+    logger.error(`${key} undefined`);
+    process.exit(1);
+  }
+}
+
+const provider = process.env.EMAIL_PROVIDER || 'mailgun';
+logger.info(`Checking required config vars for ${provider}`);
+if (provider === 'mandrill') {
+  checkConfig('MANDRILL_API_KEY');
+} else {
+  checkConfig('MAILGUN_DOMAIN');
+  checkConfig('MAILGUN_API_KEY');
+}
 
 const port = process.env.PORT || 3000;
-const provider = process.env.EMAIL_PROVIDER || 'mailgun';
-
 app.listen(port, () => {
-  logger.info(`Running emailer on port:${port} with provider:${provider}.`);
+  logger.info(`Running emailer on port:${port} using email service provider:${provider}.`);
 });

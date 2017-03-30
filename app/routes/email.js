@@ -33,7 +33,8 @@ function missingEmailParams(data) {
  */
 router.use('/', (req, res, next) => {
   const body = req.body;
-  let msg;
+  logger.info('POST /email');
+  logger.debug(body);
 
   if (missingEmailParams(body)) {
     return helpers.sendUnprocessibleEntityError(res, 'Missing required body parameters.');
