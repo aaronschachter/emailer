@@ -1,22 +1,12 @@
 'use strict';
 
-const express = require('express')
+const express = require('express');
 const router = express.Router();
 
-const emailer = require('../../lib/email');
 const emailValidator = require('email-validator');
+const helpers = require('../../lib/helpers');
+const isHtml = require('is-html');
 const logger = require('winston');
-
-/**
- * Sends a 422 error with given message for given response.
- *
- * @param {Object} res - Express response
- */
-function sendUnprocessibleEntityError(res, message) {
-  const status = 422;
-
-  res.status(status).send({ status, message });
-}
 
 /**
  * Checks if given data object contains required parameters to post a message.
@@ -42,30 +32,43 @@ router.use('/', (req, res, next) => {
   let msg;
 
   if (missingEmailParams(body)) {
-    return sendUnprocessibleEntityError(res, 'Missing required body parameters.');
+    return helpers.sendUnprocessibleEntityError(res, 'Missing required body parameters.');
   }
   if (!emailValidator.validate(body.to)) {
-    return sendUnprocessibleEntityError(res, 'Invalid \'to\' email address.'); 
+    return helpers.sendUnprocessibleEntityError(res, 'Invalid \'to\' email address.'); 
   }
   if (!emailValidator.validate(body.from)) {
-    return sendUnprocessibleEntityError(res, 'Invalid \'from\' email address.'); 
+    return helpers.sendUnprocessibleEntityError(res, 'Invalid \'from\' email address.'); 
   }
 
   next();
 });
 
 /**
+ * Store req.body.body as req.body.html if it contains valid HTML.
+ */
+router.use('/', (req, res, next) => {
+  if (isHtml(req.body.body)) {
+    req.body.html = req.body.body;
+  }
+
+  next();
+})
+
+/**
  * Post incoming request parameters to our email provider to send them as an email.
  */
 router.post('/', (req, res) => {
-  let postEmail;
+  const data = req.body;
+
+  let postMessage;
   if (process.env.EMAIL_PROVIDER === 'mandrill') {
-    postEmail = emailer.postMandrillMessage(req.body);
+    postMessage = helpers.postMandrillMessage(data);
   } else {
-    postEmail = emailer.postMailgunMessage(req.body);
+    postMessage = helpers.postMailgunMessage(data);
   }
 
-  return postEmail
+  return postMessage
     .then((response) => {
       const jsonResponse = JSON.parse(response.text);
       logger.debug(jsonResponse);
