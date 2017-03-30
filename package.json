@@ -7,12 +7,17 @@
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Aaron Schachter",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaronschachter/emailer.git"
+  },
   "dependencies": {
     "body-parser": "^1.17.1",
     "dotenv": "^4.0.0",
+    "email-validator": "^1.0.7",
     "express": "^4.15.2",
+    "is-html": "^1.1.0",
     "superagent": "^3.5.2",
     "winston": "^2.3.1"
   }
