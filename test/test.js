@@ -3,6 +3,9 @@
 require('dotenv').config({ silent: true });
 const assert = require('assert');
 
+/**
+ * Example /POST email payload to use in tests.
+ */
 function getData() { 
   return {
     to: 'rick@walkingdead.com',
@@ -10,11 +13,13 @@ function getData() {
     from: 'neegan@walkingdead.com',
     from_name: 'Neegan',
     subject: 'Hello from the Saviors',
-    body: '<h1>HI</h1><p>Want to chat?</p>',
-    text: 'Hi want to chat?',
+    body: '<h1>Hey Rick!</h1><p>Want to<a href="http://www.aim.com/">chat on AOL?</a></p>',
   };
 };
 
+/**
+ * Helpers.
+ */
 const helpers = require('../lib/helpers');
 describe('/lib/helpers', function() {
   describe('#missingEmailParams()', function() {
@@ -24,11 +29,8 @@ describe('/lib/helpers', function() {
       assert.equal(false, helpers.missingEmailParams(data));
     });
 
-    // Text parameter isn't passed in our POST request.
-    delete data.text;
-    const params = Object.keys(data);
-
-    params.forEach((param) => {
+    // For each property in our data object, verify missingEmailParams if the property is missing.
+    Object.keys(data).forEach((param) => {
       const scope = getData();
       delete scope[param];
 
@@ -36,38 +38,48 @@ describe('/lib/helpers', function() {
         assert.equal(true, helpers.missingEmailParams(scope));
       });
     });
+
     it('should return true if empty', function() {
       assert.equal(true, helpers.missingEmailParams({}));
     });
-
   });
 });
 
+/**
+ * Mailgun.
+ */
 const mailgun = require('../lib/mailgun');
+const htmlToText = require('html-to-text');
 describe('/lib/mailgun', function() {
   const data = getData();
+
   describe('#formatEmailString()', function() {
     it('should return expected string', function() {
       assert.equal(`${data.to_name} <${data.to}>`, mailgun.formatEmailString(data.to, data.to_name));
     });
   });
+
   describe('#formatPayload()', function() {
     it('should return expected object', function() {
       const formatted = {
         to: mailgun.formatEmailString(data.to, data.to_name),
         from: mailgun.formatEmailString(data.from, data.from_name),
         subject: data.subject,
-        text: data.text,
-        html: data.html,
+        text: htmlToText.fromString(data.body),
+        html: data.body,
       };
       assert.deepEqual(formatted, mailgun.formatPayload(data));
     });
   });
 });
 
+/**
+ * Mandrill.
+ */
 const mandrill = require('../lib/mandrill');
 describe('/lib/mandrill', function() {
   const data = getData();
+
   describe('#formatPayload()', function() {
     it('should return expected object', function() {
       const formatted = {

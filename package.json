@@ -18,8 +18,7 @@
     "dotenv": "^4.0.0",
     "email-validator": "^1.0.7",
     "express": "^4.15.2",
-    "is-html": "^1.1.0",
-    "striptags": "^3.0.1",
+    "html-to-text": "^3.2.0",
     "superagent": "^3.5.2",
     "winston": "^2.3.1"
   },
