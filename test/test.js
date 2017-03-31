@@ -73,8 +73,8 @@ describe('/lib/mandrill', function() {
       const formatted = {
         key: process.env.MANDRILL_API_KEY,
         message: {
-          text: data.text,
-          html: data.html,
+          auto_text: true,
+          html: data.body,
           subject: data.subject,
           from_email: data.from,
           from_name: data.from_name,
