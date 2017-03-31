@@ -2,6 +2,8 @@
 
 Emailer is a HTTP service that accepts POST requests with JSON data to an `/email` endpoint, and submits the data to either [Mailgun](https://www.mailgun.com/) or [Mandrill](http://mandrill.com/) to deliver the data as an email message. Emailer is built with [Express](https://expressjs.com/).
 
+* [Documentation](https://github.com/aaronschachter/emailer/tree/master/documentation)
+
 ### Installation
 
 * Install [Node.js 6.10](https://nodejs.org/en/)
@@ -27,8 +29,18 @@ I used Express because it's great for quickly spinning up a webservice and defin
     * If a request to our default email provider fails, attempt to send the request to the other provider instead.
     * Log all incoming requests and the Emailer response in a database or file.
 
-* [winston](https://www.npmjs.com/package/winston) - A library for logging messages to the console, useful for keeping :eyes: on the logs and/or debugging :mag_left:
+* [winston](https://www.npmjs.com/package/winston) - A library for logging messages to the console, useful for keeping :eyes: on the logs and/or debugging :mag:
 
 Besides the automatic attempt to try the other service, some other nice-to-have features include:
+
+* Require authentication / API key to post to the Emailer API
+
+* Throttle incoming API requests
+
+* More descriptive network error messages returned for certain issues (e.g. passing an invalid API keys.  returns `Internal Server Error`)
+
+* When converting the incoming `body` HTML to plain text, if a tag like a `<p>` or `<li>` is found, insert a line break at the closing tag to help readability
+
 * Attempt to fix invalid HTML sent through in the `body` parameter
+
 * Additional config variables to check if the email domain passed in the `from` parameter is valid for the current email provider

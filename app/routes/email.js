@@ -81,6 +81,7 @@ router.post('/', (req, res) => {
     .then((postResponse) => {
       const response = {
         provider,
+        message: `Success!`,
         provider_response: postResponse,
       };
       logger.info(response);
@@ -91,7 +92,7 @@ router.post('/', (req, res) => {
       const response = {
         provider,
         message: err.message,
-        provider_response: err.providerResponse ? err.providerResponse : null,
+        provider_response: err.providerResponse,
       };
       logger.warn(response);
 
