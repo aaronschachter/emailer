@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "Aaron Schachter",
   "repository": {
@@ -22,5 +22,8 @@
     "striptags": "^3.0.1",
     "superagent": "^3.5.2",
     "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0"
   }
 }

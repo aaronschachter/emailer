@@ -13,22 +13,6 @@ const mailgun = require('../../lib/mailgun');
 const mandrill = require('../../lib/mandrill');
 
 /**
- * Checks if given data object contains required parameters to post a message.
- *
- * @param {Object} data
- * @return {boolean}
- */
-function missingEmailParams(data) {
-  if (!data) {
-    return true;
-  }
-
-  const requiredParams = ['to', 'to_name', 'from', 'from_name', 'subject', 'body'];
-
-  return requiredParams.some(paramName => !data[paramName]);
-}
-
-/**
  * Validate incoming request parameters.
  */
 router.use('/', (req, res, next) => {
@@ -36,7 +20,7 @@ router.use('/', (req, res, next) => {
   logger.info('POST /email');
   logger.debug(body);
 
-  if (missingEmailParams(body)) {
+  if (helpers.missingEmailParams(body)) {
     return helpers.sendUnprocessibleEntityError(res, 'Missing required body parameters.');
   }
   if (!emailValidator.validate(body.to)) {

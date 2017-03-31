@@ -2,6 +2,8 @@
 
 Emailer is a HTTP service that accepts POST requests with JSON data to an `/email` endpoint, and submits the data to either [Mailgun](https://www.mailgun.com/) or [Mandrill](http://mandrill.com/) to deliver the data as an email message. Emailer is built with [Express](https://expressjs.com/).
 
+Emailer will use Mailgun by default, but can be configured to use Mandrill instead by setting the `EMAIL_PROVIDER` config variable to `mandrill`.
+
 * [Documentation](https://github.com/aaronschachter/emailer/tree/master/documentation)
 
 ### Installation
@@ -12,6 +14,9 @@ Emailer is a HTTP service that accepts POST requests with JSON data to an `/emai
 * Copy [`.env.example`](https://github.com/aaronschachter/emailer/blob/master/README.md) as `.env` in the root directory, and update the values with your own Mailgun key and Mandrill key/domain
 * To start Emailer, run `npm start`
     * Your `email` endpoint will be running on `http://localhost:3000/email`. Specify a different port number by adding a `PORT` variable to your `.env` file.
+    
+### Tests
+* Run `npm test` to execute unit tests
 
 ### Notes
 
@@ -38,6 +43,8 @@ Besides the automatic attempt to try the other service, some other nice-to-have 
 * Throttle incoming API requests
 
 * More descriptive network error messages returned for certain issues (e.g. passing an invalid API keys.  returns `Internal Server Error`)
+
+* Use a library like [Nock](https://github.com/node-nock/nock) to mock Mailgun and Mandrill responses, and test coverage for the Mandrill and Mailgun `postMessage` functions.
 
 * When converting the incoming `body` HTML to plain text, if a tag like a `<p>` or `<li>` is found, insert a line break at the closing tag to help readability
 
