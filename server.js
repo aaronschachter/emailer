@@ -7,8 +7,6 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-app.use('/email', require('./app/routes/email'));
-
 const logger = require('winston');
 logger.configure({
   transports: [
@@ -16,6 +14,7 @@ logger.configure({
       prettyPrint: true,
       colorize: true,
       level: process.env.LOGGING_LEVEL || 'info',
+      timestamp: true,
     }),
   ],
 });
@@ -35,6 +34,8 @@ if (provider === 'mandrill') {
   checkConfig('MAILGUN_DOMAIN');
   checkConfig('MAILGUN_API_KEY');
 }
+
+app.use('/email', require('./app/routes/email'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
